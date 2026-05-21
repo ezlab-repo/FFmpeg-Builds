@@ -1,0 +1,128 @@
+# Disabled Codecs in ezLab FFmpeg Builds
+
+> ezLab의 FFmpeg LGPL 빌드(`win64-lgpl-shared` 변형)에서 비활성화한 코덱·라이브러리 단일 정리본. 옵션 변경 시 이 문서도 동시에 갱신해야 함.
+>
+> 기준 베이스라인: BtbN ffmpeg-master-latest-win64-lgpl-shared (N-124557-g9e71ea2d60-20260520). `BASELINE_20260521_*.txt` 참조.
+
+## 분류 기준
+
+- **Type**: encoder / decoder / parser / bsf / lib (외부 라이브러리)
+- **Pool**: 라이선스 풀 또는 특허 보유 단체
+- **Disable 위치**: `variants/win64-lgpl-shared.sh` 또는 `scripts.d/50-*.sh`
+- **상태**: 활성 / 회색 / 일관성
+
+## 비활성화 항목
+
+### 외부 라이브러리 (lib)
+
+| Codec | Type | Pool | Disable 위치 | 비고 |
+|---|---|---|---|---|
+| libopenh264 | lib (enc/dec) | Via Licensing AVC | `scripts.d/50-openh264.sh` | Cisco OpenH264. 활성 특허 |
+| libopencore-amrnb/amrwb | lib (dec) | VoiceAge AMR | `scripts.d/50-opencore-amr.sh` | AMR 음성. 활성 |
+| libvvenc | lib (enc) | VVC (Velos/MPEG LA) | `scripts.d/50-vvenc.sh` | VVC 인코더. 활성 |
+| libuavs3d | lib (dec) | AVS3 (중국 표준) | `scripts.d/50-uavs3d.sh` | AVS3 디코더. 특허 |
+| libkvazaar | lib (enc) | MPEG LA HEVC | `scripts.d/50-kvazaar.sh` | **HEVC sw 인코더**. 활성 특허 |
+| liboapv | lib (dec) | Samsung APV | `scripts.d/50-openapv.sh` | 신규 표준. 특허 검토 미완 → 보수적 disable |
+| liblcevc-dec | lib (dec) | V-Nova LCEVC | `scripts.d/50-lcevcdec.sh` | LCEVC 디코더. 활성 특허 |
+
+### HEVC / H.265 패밀리 (Access Advance + MPEG LA HEVC + Velos)
+
+| Codec | Type | Disable 위치 |
+|---|---|---|
+| hevc | decoder | `variants/win64-lgpl-shared.sh` |
+| hevc_qsv | decoder/encoder | `variants/win64-lgpl-shared.sh` |
+| hevc_cuvid | decoder | `variants/win64-lgpl-shared.sh` |
+| hevc_amf | encoder | `variants/win64-lgpl-shared.sh` |
+| hevc_nvenc | encoder | `variants/win64-lgpl-shared.sh` |
+| hevc_mf | encoder | `variants/win64-lgpl-shared.sh` |
+| hevc (parser) | parser | `variants/win64-lgpl-shared.sh` |
+| hevc_mp4toannexb | bsf | `variants/win64-lgpl-shared.sh` |
+| hevc_metadata | bsf | `variants/win64-lgpl-shared.sh` |
+
+### H.264 / AVC 패밀리 (Via Licensing AVC)
+
+| Codec | Type | Disable 위치 |
+|---|---|---|
+| h264 | decoder | `variants/win64-lgpl-shared.sh` |
+| h264_qsv | decoder/encoder | `variants/win64-lgpl-shared.sh` |
+| h264_cuvid | decoder | `variants/win64-lgpl-shared.sh` |
+| h264_amf | encoder | `variants/win64-lgpl-shared.sh` |
+| h264_nvenc | encoder | `variants/win64-lgpl-shared.sh` |
+| h264_mf | encoder | `variants/win64-lgpl-shared.sh` |
+| h264 (parser) | parser | `variants/win64-lgpl-shared.sh` |
+| h264_mp4toannexb | bsf | `variants/win64-lgpl-shared.sh` |
+| h264_metadata | bsf | `variants/win64-lgpl-shared.sh` |
+| h264_redundant_pps | bsf | `variants/win64-lgpl-shared.sh` |
+
+### VVC / H.266 패밀리 (최신 표준, 활성 특허)
+
+| Codec | Type | Disable 위치 |
+|---|---|---|
+| vvc | decoder | `variants/win64-lgpl-shared.sh` |
+| vvc_qsv | decoder | `variants/win64-lgpl-shared.sh` |
+| vvc (parser) | parser | `variants/win64-lgpl-shared.sh` |
+| vvc_mp4toannexb | bsf | `variants/win64-lgpl-shared.sh` |
+| vvc_metadata | bsf | `variants/win64-lgpl-shared.sh` |
+
+### VC-1 + WMV9 패밀리 (MPEG LA VC-1)
+
+| Codec | Type | Disable 위치 | 비고 |
+|---|---|---|---|
+| vc1 | decoder | `variants/win64-lgpl-shared.sh` | |
+| vc1_qsv | decoder | `variants/win64-lgpl-shared.sh` | |
+| vc1_cuvid | decoder | `variants/win64-lgpl-shared.sh` | |
+| vc1image | decoder | `variants/win64-lgpl-shared.sh` | |
+| wmv3 | decoder | `variants/win64-lgpl-shared.sh` | WMV3 = WMV9 = VC-1 Simple/Main |
+| wmv3image | decoder | `variants/win64-lgpl-shared.sh` | |
+| vc1 (parser) | parser | `variants/win64-lgpl-shared.sh` | |
+
+### Dolby 패밀리 (AC-3, EAC-3, TrueHD, Vision)
+
+| Codec | Type | Disable 위치 |
+|---|---|---|
+| ac3, ac3_fixed, ac3_mf | encoder | `variants/win64-lgpl-shared.sh` |
+| eac3 | encoder | `variants/win64-lgpl-shared.sh` |
+| truehd | encoder | `variants/win64-lgpl-shared.sh` |
+| ac3, ac3_fixed | decoder | `variants/win64-lgpl-shared.sh` |
+| eac3 | decoder | `variants/win64-lgpl-shared.sh` |
+| truehd | decoder | `variants/win64-lgpl-shared.sh` |
+| dolby_e | decoder | `variants/win64-lgpl-shared.sh` |
+| ac3 (parser) | parser | `variants/win64-lgpl-shared.sh` |
+| eac3_core | bsf | `variants/win64-lgpl-shared.sh` |
+| dovi_rpu | bsf | `variants/win64-lgpl-shared.sh` |
+
+### DTS 패밀리 (Xperi)
+
+| Codec | Type | Disable 위치 |
+|---|---|---|
+| dca | encoder/decoder | `variants/win64-lgpl-shared.sh` |
+| dca (parser) | parser | `variants/win64-lgpl-shared.sh` |
+
+### Qualcomm aptX (일관성)
+
+| Codec | Type | Disable 위치 |
+|---|---|---|
+| aptx, aptx_hd | encoder/decoder | `variants/win64-lgpl-shared.sh` |
+
+### Sony ATRAC (일관성, atrac3p/atrac3pal은 새 빌드 부재)
+
+| Codec | Type | Disable 위치 |
+|---|---|---|
+| atrac1, atrac3, atrac3al, atrac9 | decoder | `variants/win64-lgpl-shared.sh` |
+
+### Microsoft WMA (일관성)
+
+| Codec | Type | Disable 위치 |
+|---|---|---|
+| wmav1, wmav2 | encoder | `variants/win64-lgpl-shared.sh` |
+| wmav1, wmav2, wmapro, wmalossless, wmavoice | decoder | `variants/win64-lgpl-shared.sh` |
+
+## BtbN이 이미 disable한 것 (우리가 추가 처리 불필요)
+
+- `libdavs2`, `libxavs2` (AVS2)
+- `libx264`, `libx265` (GPL 코덱)
+- `libxvid`, `libfdk-aac`
+
+## 회귀 감지
+
+`BASELINE_<날짜>_encoders.txt`, `decoders.txt`, `bsfs.txt`, `buildconf.txt`, `version.txt`가 fork 레포 루트에 보관됨. 향후 BtbN 업스트림 변경 시 새 빌드의 출력을 BASELINE과 `diff`하여 신규 활성 특허 코덱·라이브러리 발견 시 본 문서에 추가.
