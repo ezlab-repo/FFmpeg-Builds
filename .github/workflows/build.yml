@@ -17,8 +17,6 @@ on:
         type: boolean
         default: false
         required: false
-  schedule:
-    - cron: '0 12 * * *'
 
 env:
   DOCKER_BUILDKIT: 1
@@ -58,7 +56,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-latest,ubuntu-24.04-arm]
+        # ezLab: win64 cross-compile only - ARM runner base image not needed
+        runner: [ubuntu-latest]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Free Disk-Space
