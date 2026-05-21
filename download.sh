@@ -25,6 +25,10 @@ for STAGE in scripts.d/*.sh scripts.d/*/*.sh; do
 
 		source /dl_functions.sh
 		source "/$STAGE"
+
+		# ezLab: respect ffbuild_enabled in cache step (otherwise download.sh ignores it)
+		ffbuild_enabled || exit 0
+
 		STG="\$(ffbuild_dockerdl)"
 
 		if [[ -z "\$STG" ]]; then

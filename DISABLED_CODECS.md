@@ -2,7 +2,7 @@
 
 > ezLab의 FFmpeg LGPL 빌드(`win64-lgpl-shared` 변형)에서 비활성화한 코덱·라이브러리 단일 정리본. 옵션 변경 시 이 문서도 동시에 갱신해야 함.
 >
-> 기준 베이스라인: BtbN ffmpeg-master-latest-win64-lgpl-shared (N-124557-g9e71ea2d60-20260520). `BASELINE_20260521_*.txt` 참조.
+> 기준 베이스라인: BtbN ffmpeg-master-latest-win64-lgpl-shared (N-124557-g9e71ea2d60-20260520). `BASELINE_20260521.md` 참조.
 
 ## 판단 기준 (어떤 항목을 빼고, 어떤 항목을 유지하나)
 
@@ -22,7 +22,7 @@
 - 컨테이너: `mp4`, `matroska`, `gif`, `wav` muxer
 - 입력: `gdigrab` (Windows GDI), `dshow` (DirectShow) — OS API 래퍼
 
-> 향후 *새 활성 특허 코덱*이 BtbN 본가에 추가될 가능성에 대비해 BASELINE 파일들을 보관. 회귀 감지는 `diff BASELINE_<기준날짜>_encoders.txt new_encoders.txt` 형태로 수행.
+> 향후 *새 활성 특허 코덱*이 BtbN 본가에 추가될 가능성에 대비해 BASELINE 마크다운을 보관. 회귀 감지는 새 BASELINE을 생성한 후 `diff BASELINE_<기준날짜>.md BASELINE_<새날짜>.md` 형태로 수행.
 
 ## 분류 기준
 
@@ -160,4 +160,4 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 
 ## 회귀 감지
 
-`BASELINE_<날짜>_encoders.txt`, `decoders.txt`, `bsfs.txt`, `buildconf.txt`, `version.txt`가 fork 레포 루트에 보관됨. 향후 BtbN 업스트림 변경 시 새 빌드의 출력을 BASELINE과 `diff`하여 신규 활성 특허 코덱·라이브러리 발견 시 본 문서에 추가.
+`BASELINE_<날짜>.md`(통합 단일 파일)가 fork 레포 루트에 보관됨. 향후 BtbN 업스트림 변경 시 새 BASELINE을 생성하여 기존 BASELINE과 `diff`로 비교 — 신규 활성 특허 코덱·라이브러리 발견 시 본 문서에 추가.
