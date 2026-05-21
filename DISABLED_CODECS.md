@@ -4,6 +4,26 @@
 >
 > 기준 베이스라인: BtbN ffmpeg-master-latest-win64-lgpl-shared (N-124557-g9e71ea2d60-20260520). `BASELINE_20260521_*.txt` 참조.
 
+## 판단 기준 (어떤 항목을 빼고, 어떤 항목을 유지하나)
+
+**비활성화 대상**: 현재(2026 기준) *활성 특허 풀에 묶인* 코덱·라이브러리. 라이선스 풀이 운영 중이고 *make·use·sell·offer to sell·import* 다섯 행위 중 *sell* 트리거가 실제 위험인 항목.
+
+**유지 대상** (비활성화하지 않음):
+- **만료된 특허**: MPEG-4 Part 2 (`mpeg4`, 2024-01-28 만료), AAC LC (`aac`, 미국 만료), MP3, MPEG-2 등
+- **Royalty-free 코덱**: Opus, Vorbis, Theora, AV1 (libaom/libdav1d/libsvtav1), VP8/9 (libvpx), FLAC, WebP, JPEG XL, ALAC 등
+- **무특허 포맷**: PNG, GIF, BMP, PCM 전체 변형, WAV, MKV 등
+- **OS/벤더 라이선스에 위임된 H.264 인코더는 *모두 비활성화*** — `h264_mf` 같은 OS API 위임도 회색지대라 제외 (사용 자체가 ezCapture에서 불필요)
+- **자막·필터·도구 라이브러리**: libass, libfreetype, libfribidi, libharfbuzz 등 — 특허 무관, 텍스트 렌더링용
+
+**ezCapture 실제 사용 코덱**(*반드시* 유지):
+- 비디오 인코딩: `mpeg4` (만료)
+- 오디오 인코딩: `aac` (LC, 미국 만료), `pcm_s16le` (무특허)
+- 이미지: `png` (썸네일, 무특허), `gif` (GIF 출력, 무특허)
+- 컨테이너: `mp4`, `matroska`, `gif`, `wav` muxer
+- 입력: `gdigrab` (Windows GDI), `dshow` (DirectShow) — OS API 래퍼
+
+> 향후 *새 활성 특허 코덱*이 BtbN 본가에 추가될 가능성에 대비해 BASELINE 파일들을 보관. 회귀 감지는 `diff BASELINE_<기준날짜>_encoders.txt new_encoders.txt` 형태로 수행.
+
 ## 분류 기준
 
 - **Type**: encoder / decoder / parser / bsf / lib (외부 라이브러리)
@@ -13,7 +33,9 @@
 
 ## 비활성화 항목
 
-### 외부 라이브러리 (lib)
+### 외부 라이브러리 — 특허 회피용 disable
+
+활성 특허 풀에 묶여 있어 *우리가 추가로 disable*한 라이브러리들. 변형 무관하게 빌드에 포함되지 않도록 `ffbuild_enabled() { return 1 }` 처리.
 
 | Codec | Type | Pool | Disable 위치 | 비고 |
 |---|---|---|---|---|
@@ -24,6 +46,21 @@
 | libkvazaar | lib (enc) | MPEG LA HEVC | `scripts.d/50-kvazaar.sh` | **HEVC sw 인코더**. 활성 특허 |
 | liboapv | lib (dec) | Samsung APV | `scripts.d/50-openapv.sh` | 신규 표준. 특허 검토 미완 → 보수적 disable |
 | liblcevc-dec | lib (dec) | V-Nova LCEVC | `scripts.d/50-lcevcdec.sh` | LCEVC 디코더. 활성 특허 |
+
+### 외부 라이브러리 — cache step robustness용 unconditional disable
+
+BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이브러리들. 즉 *최종 빌드 산출물에는 어차피 들어가지 않음*. 그런데 BtbN의 `Update Cache` step은 VARIANT 환경변수 없이 호출되어 fallback `return 0`이 적용 → variant 무시하고 모든 라이브러리 소스를 다운로드. 외부 서버 장애 시 빌드 실패 위험.
+
+→ 의미상 *우리 빌드에 안 들어가는* 라이브러리들이므로 `ffbuild_enabled() { return 1 }`로 unconditional disable. 외부 서버 의존성을 줄여 빌드 환경 robustness 확보.
+
+| Codec | Type | BtbN 본가 lgpl 동작 | Disable 위치 | 비고 |
+|---|---|---|---|---|
+| libx264 | lib (enc) | 자동 disable (GPL) | `scripts.d/50-x264.sh` | code.videolan.org git |
+| libx265 | lib (enc) | 자동 disable (GPL) | `scripts.d/50-x265.sh` | bitbucket.org git |
+| libxvid | lib (enc) | 자동 disable | `scripts.d/50-xvid.sh` | svn.xvid.org SVN — *서버 불안정 확인됨 (502)* |
+| libdavs2 | lib (dec) | 자동 disable | `scripts.d/50-davs2.sh` | github.com/pkuvcl/davs2 |
+| libxavs2 | lib (enc) | 자동 disable | `scripts.d/50-xavs2.sh` | github.com/pkuvcl/xavs2 |
+| libfdk-aac | lib (enc) | 자동 disable (nonfree 전용) | `scripts.d/50-fdk-aac.sh` | github.com/mstorsjo/fdk-aac |
 
 ### HEVC / H.265 패밀리 (Access Advance + MPEG LA HEVC + Velos)
 
@@ -117,11 +154,9 @@
 | wmav1, wmav2 | encoder | `variants/win64-lgpl-shared.sh` |
 | wmav1, wmav2, wmapro, wmalossless, wmavoice | decoder | `variants/win64-lgpl-shared.sh` |
 
-## BtbN이 이미 disable한 것 (우리가 추가 처리 불필요)
+## BtbN buildconf에서 disable 표시되는 것 (우리 빌드 산출물 불포함)
 
-- `libdavs2`, `libxavs2` (AVS2)
-- `libx264`, `libx265` (GPL 코덱)
-- `libxvid`, `libfdk-aac`
+`libdavs2`, `libxavs2`, `libx264`, `libx265`, `libxvid`, `libfdk-aac` — BtbN 본가 로직으로 lgpl variant에선 자동 disable. 우리도 *cache step robustness*용으로 추가 unconditional disable 처리 완료 (위 표 참조).
 
 ## 회귀 감지
 

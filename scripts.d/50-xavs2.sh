@@ -4,11 +4,7 @@ SCRIPT_REPO="https://github.com/pkuvcl/xavs2.git"
 SCRIPT_COMMIT="eae1e8b9d12468059bdd7dee893508e470fa83d8"
 
 ffbuild_enabled() {
-    [[ $VARIANT == lgpl* ]] && return -1
-    [[ $TARGET == win32 ]] && return -1
-    # xavs2 aarch64 support is broken
-    [[ $TARGET == *arm64 ]] && return -1
-    return 0
+    return 1  # ezLab: AVS2 인코더, lgpl variant 자동 disable + cache step robustness
 }
 
 ffbuild_dockerdl() {

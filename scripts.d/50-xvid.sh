@@ -4,8 +4,7 @@ SCRIPT_REPO="https://svn.xvid.org/trunk/xvidcore"
 SCRIPT_REV="2202"
 
 ffbuild_enabled() {
-    [[ $VARIANT == lgpl* ]] && return -1
-    return 0
+    return 1  # ezLab: xvid 사용 안 함 + svn.xvid.org 불안정 회피 (cache step 통과용)
 }
 
 ffbuild_dockerdl() {

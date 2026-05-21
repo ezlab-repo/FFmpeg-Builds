@@ -4,8 +4,7 @@ SCRIPT_REPO="https://code.videolan.org/videolan/x264.git"
 SCRIPT_COMMIT="0480cb05fa188d37ae87e8f4fd8f1aea3711f7ee"
 
 ffbuild_enabled() {
-    [[ $VARIANT == lgpl* ]] && return -1
-    return 0
+    return 1  # ezLab: GPL 라이브러리, lgpl variant 자동 disable + cache step robustness
 }
 
 ffbuild_dockerbuild() {
