@@ -4,7 +4,7 @@ SCRIPT_REPO="https://github.com/ultravideo/kvazaar.git"
 SCRIPT_COMMIT="c5bab996d340ffd78943a6456f981278bc7474d5"
 
 ffbuild_enabled() {
-    return 0
+    return 1  # ezLab: MPEG LA HEVC 특허 회피 (HEVC sw 인코더)
 }
 
 ffbuild_dockerbuild() {

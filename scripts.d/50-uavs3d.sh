@@ -4,10 +4,7 @@ SCRIPT_REPO="https://github.com/uavs3/uavs3d.git"
 SCRIPT_COMMIT="0e20d2c291853f196c68922a264bcd8471d75b68"
 
 ffbuild_enabled() {
-    [[ $TARGET == win32 ]] && return -1
-    [[ $TARGET == winarm64 ]] && return -1
-    (( $(ffbuild_ffver) >= 404 )) || return -1
-    return 0
+    return 1  # ezLab: AVS3 활성 특허 회피
 }
 
 ffbuild_dockerdl() {

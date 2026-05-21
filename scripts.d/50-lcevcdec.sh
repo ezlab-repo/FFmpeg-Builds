@@ -4,9 +4,7 @@ SCRIPT_REPO="https://github.com/v-novaltd/LCEVCdec.git"
 SCRIPT_COMMIT="655f029d0008f00da9c976567ea159437aa86a36"
 
 ffbuild_enabled() {
-    (( $(ffbuild_ffver) >= 800 )) || return -1
-    [[ $TARGET != winarm* ]] || return -1
-    return 0
+    return 1  # ezLab: V-Nova LCEVC 활성 특허 회피
 }
 
 ffbuild_dockerbuild() {

@@ -4,8 +4,7 @@ SCRIPT_REPO="https://github.com/AcademySoftwareFoundation/openapv.git"
 SCRIPT_COMMIT="4aad1d11fd3091979826e2475c257dfff8241529"
 
 ffbuild_enabled() {
-    (( $(ffbuild_ffver) > 701 )) || return -1
-    return 0
+    return 1  # ezLab: APV 특허 검토 미완 - 보수적 disable
 }
 
 ffbuild_dockerdl() {

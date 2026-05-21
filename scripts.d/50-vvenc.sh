@@ -4,9 +4,7 @@ SCRIPT_REPO="https://github.com/fraunhoferhhi/vvenc.git"
 SCRIPT_COMMIT="5c99706c4ca47bdb78ac1ad3751a7edbb5d57c2b"
 
 ffbuild_enabled() {
-    [[ $TARGET != *32 ]] || return -1
-    (( $(ffbuild_ffver) > 700 )) || return -1
-    return 0
+    return 1  # ezLab: VVC 활성 특허 회피
 }
 
 ffbuild_dockerbuild() {
