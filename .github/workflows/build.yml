@@ -23,6 +23,12 @@ on:
 env:
   DOCKER_BUILDKIT: 1
 
+# ezLab: explicit packages:write permission for GHCR push from forked repo
+# (org-level default may be read-only; this overrides at workflow scope)
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   pre_check:
     name: Pre Checks
