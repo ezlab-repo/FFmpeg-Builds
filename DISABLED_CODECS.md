@@ -69,12 +69,16 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 | hevc | decoder | `variants/win64-lgpl-shared.sh` |
 | hevc_qsv | decoder/encoder | `variants/win64-lgpl-shared.sh` |
 | hevc_cuvid | decoder | `variants/win64-lgpl-shared.sh` |
-| hevc_amf | encoder | `variants/win64-lgpl-shared.sh` |
+| hevc_amf | encoder/decoder | `variants/win64-lgpl-shared.sh` |
 | hevc_nvenc | encoder | `variants/win64-lgpl-shared.sh` |
 | hevc_mf | encoder | `variants/win64-lgpl-shared.sh` |
+| hevc_d3d12va | encoder | `variants/win64-lgpl-shared.sh` |
+| hevc_vaapi | encoder | `variants/win64-lgpl-shared.sh` |
+| hevc_vulkan | encoder | `variants/win64-lgpl-shared.sh` |
 | hevc (parser) | parser | `variants/win64-lgpl-shared.sh` |
-| hevc_mp4toannexb | bsf | `variants/win64-lgpl-shared.sh` |
 | hevc_metadata | bsf | `variants/win64-lgpl-shared.sh` |
+
+> `hevc_mp4toannexb` bsf는 *mp4 muxer 의존성*으로 추정되어 disable 제외. H.264/HEVC 디코더·인코더 자체가 disable되어 있어 *실제로는 호출되지 않음*.
 
 ### H.264 / AVC 패밀리 (Via Licensing AVC)
 
@@ -83,13 +87,17 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 | h264 | decoder | `variants/win64-lgpl-shared.sh` |
 | h264_qsv | decoder/encoder | `variants/win64-lgpl-shared.sh` |
 | h264_cuvid | decoder | `variants/win64-lgpl-shared.sh` |
-| h264_amf | encoder | `variants/win64-lgpl-shared.sh` |
+| h264_amf | encoder/decoder | `variants/win64-lgpl-shared.sh` |
 | h264_nvenc | encoder | `variants/win64-lgpl-shared.sh` |
 | h264_mf | encoder | `variants/win64-lgpl-shared.sh` |
+| h264_d3d12va | encoder | `variants/win64-lgpl-shared.sh` |
+| h264_vaapi | encoder | `variants/win64-lgpl-shared.sh` |
+| h264_vulkan | encoder | `variants/win64-lgpl-shared.sh` |
 | h264 (parser) | parser | `variants/win64-lgpl-shared.sh` |
-| h264_mp4toannexb | bsf | `variants/win64-lgpl-shared.sh` |
 | h264_metadata | bsf | `variants/win64-lgpl-shared.sh` |
 | h264_redundant_pps | bsf | `variants/win64-lgpl-shared.sh` |
+
+> `h264_mp4toannexb` bsf는 mp4 muxer 의존성으로 추정되어 disable 제외 (위와 같은 이유).
 
 ### VVC / H.266 패밀리 (최신 표준, 활성 특허)
 
@@ -98,8 +106,9 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 | vvc | decoder | `variants/win64-lgpl-shared.sh` |
 | vvc_qsv | decoder | `variants/win64-lgpl-shared.sh` |
 | vvc (parser) | parser | `variants/win64-lgpl-shared.sh` |
-| vvc_mp4toannexb | bsf | `variants/win64-lgpl-shared.sh` |
 | vvc_metadata | bsf | `variants/win64-lgpl-shared.sh` |
+
+> `vvc_mp4toannexb` bsf는 mp4 muxer 의존성으로 추정되어 disable 제외.
 
 ### VC-1 + WMV9 패밀리 (MPEG LA VC-1)
 
@@ -141,11 +150,14 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 |---|---|---|
 | aptx, aptx_hd | encoder/decoder | `variants/win64-lgpl-shared.sh` |
 
-### Sony ATRAC (일관성, atrac3p/atrac3pal은 새 빌드 부재)
+### Sony ATRAC (일관성)
 
 | Codec | Type | Disable 위치 |
 |---|---|---|
 | atrac1, atrac3, atrac3al, atrac9 | decoder | `variants/win64-lgpl-shared.sh` |
+| atrac3plus, atrac3plusal | decoder | `variants/win64-lgpl-shared.sh` |
+
+> codec id는 `atrac3p`/`atrac3pal`이지만 ffmpeg 내부 이름은 `atrac3plus`/`atrac3plusal`. disable 옵션엔 *이름*을 사용.
 
 ### Microsoft WMA (일관성)
 
@@ -153,6 +165,19 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 |---|---|---|
 | wmav1, wmav2 | encoder | `variants/win64-lgpl-shared.sh` |
 | wmav1, wmav2, wmapro, wmalossless, wmavoice | decoder | `variants/win64-lgpl-shared.sh` |
+
+### Apple ProRes (회색지대 — 비인증 구현)
+
+Apple은 ProRes 사용에 *공식 인증 프로그램* (`ProRes@apple.com`) 운영. FFmpeg의 ProRes 구현은 *비인증*이라 Apple이 *법적 회색지대*로 분류. ezCapture 사용 안 함 + 우리 정책(잠재 위험 + 사용 안 함 = disable)에 따라 제외.
+
+| Codec | Type | Disable 위치 |
+|---|---|---|
+| prores | encoder | `variants/win64-lgpl-shared.sh` |
+| prores_aw | encoder | `variants/win64-lgpl-shared.sh` |
+| prores_ks | encoder | `variants/win64-lgpl-shared.sh` |
+| prores_ks_vulkan | encoder | `variants/win64-lgpl-shared.sh` |
+| prores | decoder | `variants/win64-lgpl-shared.sh` |
+| prores_raw | decoder | `variants/win64-lgpl-shared.sh` |
 
 ## BtbN buildconf에서 disable 표시되는 것 (우리 빌드 산출물 불포함)
 

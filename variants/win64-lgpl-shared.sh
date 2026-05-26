@@ -6,22 +6,25 @@ source "$(dirname "$BASH_SOURCE")"/defaults-lgpl-shared.sh
 # 검증 기준: BtbN ffmpeg-master-latest-win64-lgpl-shared (N-124557-g9e71ea2d60-20260520)
 # 자세한 내용은 fork 레포 루트의 DISABLED_CODECS.md 참고
 
+# ezCapture는 MP4 출력 사용 — 명시적 enable로 의존성 누락 회피
+FF_CONFIGURE+=" --enable-muxer=mp4,mov,ipod"
+
 # HEVC 전체 제거 (Access Advance HEVC + MPEG LA HEVC + Velos)
-FF_CONFIGURE+=" --disable-decoder=hevc,hevc_qsv,hevc_cuvid"
-FF_CONFIGURE+=" --disable-encoder=hevc_amf,hevc_qsv,hevc_nvenc,hevc_mf"
+FF_CONFIGURE+=" --disable-decoder=hevc,hevc_qsv,hevc_cuvid,hevc_amf"
+FF_CONFIGURE+=" --disable-encoder=hevc_amf,hevc_qsv,hevc_nvenc,hevc_mf,hevc_d3d12va,hevc_vaapi,hevc_vulkan"
 FF_CONFIGURE+=" --disable-parser=hevc"
-FF_CONFIGURE+=" --disable-bsf=hevc_mp4toannexb,hevc_metadata"
+FF_CONFIGURE+=" --disable-bsf=hevc_metadata"  # hevc_mp4toannexb는 mp4 muxer 의존성으로 추정 — 제외
 
 # H.264 전체 제거 (Via Licensing AVC) — libopenh264는 scripts.d/50-openh264.sh에서 별도 disable
-FF_CONFIGURE+=" --disable-decoder=h264,h264_qsv,h264_cuvid"
-FF_CONFIGURE+=" --disable-encoder=h264_amf,h264_qsv,h264_nvenc,h264_mf"
+FF_CONFIGURE+=" --disable-decoder=h264,h264_qsv,h264_cuvid,h264_amf"
+FF_CONFIGURE+=" --disable-encoder=h264_amf,h264_qsv,h264_nvenc,h264_mf,h264_d3d12va,h264_vaapi,h264_vulkan"
 FF_CONFIGURE+=" --disable-parser=h264"
-FF_CONFIGURE+=" --disable-bsf=h264_mp4toannexb,h264_metadata,h264_redundant_pps"
+FF_CONFIGURE+=" --disable-bsf=h264_metadata,h264_redundant_pps"  # h264_mp4toannexb는 mp4 muxer 의존성으로 추정 — 제외
 
 # VVC (H.266) 제거 — 최신 표준, 활성 특허
 FF_CONFIGURE+=" --disable-decoder=vvc,vvc_qsv"
 FF_CONFIGURE+=" --disable-parser=vvc"
-FF_CONFIGURE+=" --disable-bsf=vvc_mp4toannexb,vvc_metadata"
+FF_CONFIGURE+=" --disable-bsf=vvc_metadata"  # vvc_mp4toannexb는 mp4 muxer 의존성으로 추정 — 제외
 
 # VC-1 + WMV9 패밀리 제거 (MPEG LA VC-1)
 # WMV3 = WMV9 = VC-1 Simple/Main Profile (같은 풀)
@@ -43,9 +46,13 @@ FF_CONFIGURE+=" --disable-parser=dca"
 FF_CONFIGURE+=" --disable-encoder=aptx,aptx_hd"
 FF_CONFIGURE+=" --disable-decoder=aptx,aptx_hd"
 
-# Sony ATRAC 패밀리 제거
-FF_CONFIGURE+=" --disable-decoder=atrac1,atrac3,atrac3al,atrac9"
+# Sony ATRAC 패밀리 제거 (atrac3plus, atrac3plusal — codec id는 atrac3p/atrac3pal지만 이름은 plus/plusal)
+FF_CONFIGURE+=" --disable-decoder=atrac1,atrac3,atrac3al,atrac9,atrac3plus,atrac3plusal"
 
 # Microsoft WMA 패밀리 제거 (일관성)
 FF_CONFIGURE+=" --disable-encoder=wmav1,wmav2"
 FF_CONFIGURE+=" --disable-decoder=wmav1,wmav2,wmapro,wmalossless,wmavoice"
+
+# Apple ProRes 제거 (Apple 비인증 구현, ezCapture 사용 안 함)
+FF_CONFIGURE+=" --disable-encoder=prores,prores_aw,prores_ks,prores_ks_vulkan"
+FF_CONFIGURE+=" --disable-decoder=prores,prores_raw"
