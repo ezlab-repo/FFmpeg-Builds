@@ -13,18 +13,18 @@ FF_CONFIGURE+=" --enable-muxer=mp4,mov,ipod"
 FF_CONFIGURE+=" --disable-decoder=hevc,hevc_qsv,hevc_cuvid,hevc_amf"
 FF_CONFIGURE+=" --disable-encoder=hevc_amf,hevc_qsv,hevc_nvenc,hevc_mf,hevc_d3d12va,hevc_vaapi,hevc_vulkan"
 FF_CONFIGURE+=" --disable-parser=hevc"
-FF_CONFIGURE+=" --disable-bsf=hevc_metadata"  # hevc_mp4toannexb는 mp4 muxer 의존성으로 추정 — 제외
+FF_CONFIGURE+=" --disable-bsf=hevc_metadata"  # hevc_mp4toannexb는 보수적으로 제외 (HEVC 코덱 자체가 disable이라 호출 안 됨)
 
 # H.264 전체 제거 (Via Licensing AVC) — libopenh264는 scripts.d/50-openh264.sh에서 별도 disable
 FF_CONFIGURE+=" --disable-decoder=h264,h264_qsv,h264_cuvid,h264_amf"
 FF_CONFIGURE+=" --disable-encoder=h264_amf,h264_qsv,h264_nvenc,h264_mf,h264_d3d12va,h264_vaapi,h264_vulkan"
 FF_CONFIGURE+=" --disable-parser=h264"
-FF_CONFIGURE+=" --disable-bsf=h264_metadata,h264_redundant_pps"  # h264_mp4toannexb는 mp4 muxer 의존성으로 추정 — 제외
+FF_CONFIGURE+=" --disable-bsf=h264_metadata,h264_redundant_pps"  # h264_mp4toannexb는 보수적으로 제외 (H.264 코덱 자체가 disable이라 호출 안 됨)
 
 # VVC (H.266) 제거 — 최신 표준, 활성 특허
 FF_CONFIGURE+=" --disable-decoder=vvc,vvc_qsv"
 FF_CONFIGURE+=" --disable-parser=vvc"
-FF_CONFIGURE+=" --disable-bsf=vvc_metadata"  # vvc_mp4toannexb는 mp4 muxer 의존성으로 추정 — 제외
+FF_CONFIGURE+=" --disable-bsf=vvc_metadata"  # vvc_mp4toannexb는 보수적으로 제외 (VVC 코덱 자체가 disable이라 호출 안 됨)
 
 # VC-1 + WMV9 패밀리 제거 (MPEG LA VC-1)
 # WMV3 = WMV9 = VC-1 Simple/Main Profile (같은 풀)

@@ -78,7 +78,7 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 | hevc (parser) | parser | `variants/win64-lgpl-shared.sh` |
 | hevc_metadata | bsf | `variants/win64-lgpl-shared.sh` |
 
-> `hevc_mp4toannexb` bsf는 *mp4 muxer 의존성*으로 추정되어 disable 제외. H.264/HEVC 디코더·인코더 자체가 disable되어 있어 *실제로는 호출되지 않음*.
+> `hevc_mp4toannexb` bsf는 disable 제외 (보수적 — 의존성 명확치 않음). HEVC 디코더·인코더 자체가 disable되어 있어 *실제로는 호출되지 않음*.
 
 ### H.264 / AVC 패밀리 (Via Licensing AVC)
 
@@ -97,7 +97,7 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 | h264_metadata | bsf | `variants/win64-lgpl-shared.sh` |
 | h264_redundant_pps | bsf | `variants/win64-lgpl-shared.sh` |
 
-> `h264_mp4toannexb` bsf는 mp4 muxer 의존성으로 추정되어 disable 제외 (위와 같은 이유).
+> `h264_mp4toannexb` bsf는 disable 제외 (위와 같은 이유).
 
 ### VVC / H.266 패밀리 (최신 표준, 활성 특허)
 
@@ -108,7 +108,7 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 | vvc (parser) | parser | `variants/win64-lgpl-shared.sh` |
 | vvc_metadata | bsf | `variants/win64-lgpl-shared.sh` |
 
-> `vvc_mp4toannexb` bsf는 mp4 muxer 의존성으로 추정되어 disable 제외.
+> `vvc_mp4toannexb` bsf는 disable 제외 (보수적).
 
 ### VC-1 + WMV9 패밀리 (MPEG LA VC-1)
 
@@ -133,9 +133,10 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 | eac3 | decoder | `variants/win64-lgpl-shared.sh` |
 | truehd | decoder | `variants/win64-lgpl-shared.sh` |
 | dolby_e | decoder | `variants/win64-lgpl-shared.sh` |
-| ac3 (parser) | parser | `variants/win64-lgpl-shared.sh` |
 | eac3_core | bsf | `variants/win64-lgpl-shared.sh` |
 | dovi_rpu | bsf | `variants/win64-lgpl-shared.sh` |
+
+> `ac3` parser는 disable 제외. mov_muxer가 select 의존성으로 `ac3_parser`를 요구 — disable하면 mp4/mov/ipod muxer 통째로 자동 disable됨. AC-3 encoder/decoder 자체는 disable이라 *실제 호출 안 됨*.
 
 ### DTS 패밀리 (Xperi)
 
@@ -155,9 +156,9 @@ BtbN 본가 로직상 *lgpl variant에서는 자동으로 disable*되는 라이�
 | Codec | Type | Disable 위치 |
 |---|---|---|
 | atrac1, atrac3, atrac3al, atrac9 | decoder | `variants/win64-lgpl-shared.sh` |
-| atrac3plus, atrac3plusal | decoder | `variants/win64-lgpl-shared.sh` |
+| atrac3p, atrac3pal | decoder | `variants/win64-lgpl-shared.sh` |
 
-> codec id는 `atrac3p`/`atrac3pal`이지만 ffmpeg 내부 이름은 `atrac3plus`/`atrac3plusal`. disable 옵션엔 *이름*을 사용.
+> ATRAC3+ / ATRAC3+ AL의 disable 옵션엔 *symbol-derived 이름* (`atrac3p`, `atrac3pal`)을 사용. `ffmpeg -decoders` 출력에 보이는 long name(`atrac3plus`, `atrac3plusal`)을 그대로 쓰면 configure가 *unknown name으로 silently 무시*하므로 주의.
 
 ### Microsoft WMA (일관성)
 
