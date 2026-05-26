@@ -63,5 +63,14 @@ for STAGE in scripts.d/*.sh scripts.d/*/*.sh; do
 	EOF
 done
 
-docker run -i $TTY_ARG --rm "${UIDARGS[@]}" -v "${DL_SCRIPT_DIR}":/stages -v "${PWD}/.cache/downloads":/dldir -v "${PWD}/scripts.d":/scripts.d -v "${PWD}/util/dl_functions.sh":/dl_functions.sh "${REGISTRY}/${REPO}/base:latest" \
+# ezLab: explicitly pass build context env vars into the cache container.
+# Without these, ffbuild_enabled branches like '[[ $TARGET == win* ]] || return -1'
+# or '[[ $VARIANT == lgpl* ]] && return -1' evaluate against empty values and
+# skip libraries we actually need (e.g. 10-mingw, 47-vulkan). Hardcoded for our
+# single target/variant combo.
+docker run -i $TTY_ARG --rm "${UIDARGS[@]}" \
+	-e TARGET=win64 \
+	-e VARIANT=lgpl-shared \
+	-e ADDINS_STR="" \
+	-v "${DL_SCRIPT_DIR}":/stages -v "${PWD}/.cache/downloads":/dldir -v "${PWD}/scripts.d":/scripts.d -v "${PWD}/util/dl_functions.sh":/dl_functions.sh "${REGISTRY}/${REPO}/base:latest" \
 	bash -c 'set -xe && for STAGE in /stages/*.sh; do bash $STAGE; done'
