@@ -32,9 +32,9 @@ FF_CONFIGURE+=" --disable-decoder=vc1,vc1_qsv,vc1_cuvid,vc1image,wmv3,wmv3image"
 FF_CONFIGURE+=" --disable-parser=vc1"
 
 # Dolby (AC-3, EAC-3, TrueHD, Vision) 제거
+# 주의: ac3 parser는 mov_muxer select 의존성 — disable하면 mp4/mov/ipod muxer 통째로 사라짐. parser는 dormant 유지.
 FF_CONFIGURE+=" --disable-encoder=ac3,ac3_fixed,ac3_mf,eac3,truehd"
 FF_CONFIGURE+=" --disable-decoder=ac3,ac3_fixed,eac3,truehd,dolby_e"
-FF_CONFIGURE+=" --disable-parser=ac3"
 FF_CONFIGURE+=" --disable-bsf=eac3_core,dovi_rpu"
 
 # DTS (Xperi) 제거
@@ -46,8 +46,9 @@ FF_CONFIGURE+=" --disable-parser=dca"
 FF_CONFIGURE+=" --disable-encoder=aptx,aptx_hd"
 FF_CONFIGURE+=" --disable-decoder=aptx,aptx_hd"
 
-# Sony ATRAC 패밀리 제거 (atrac3plus, atrac3plusal — codec id는 atrac3p/atrac3pal지만 이름은 plus/plusal)
-FF_CONFIGURE+=" --disable-decoder=atrac1,atrac3,atrac3al,atrac9,atrac3plus,atrac3plusal"
+# Sony ATRAC 패밀리 제거
+# configure는 symbol-derived 이름(atrac3p, atrac3pal)을 받음. -decoders 출력의 long name(atrac3plus, atrac3plusal)은 unknown으로 silently 무시되니 주의.
+FF_CONFIGURE+=" --disable-decoder=atrac1,atrac3,atrac3al,atrac9,atrac3p,atrac3pal"
 
 # Microsoft WMA 패밀리 제거 (일관성)
 FF_CONFIGURE+=" --disable-encoder=wmav1,wmav2"
