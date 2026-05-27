@@ -21,10 +21,11 @@ on:
 env:
   DOCKER_BUILDKIT: 1
 
-# ezLab: explicit packages:write permission for GHCR push from forked repo
-# (org-level default may be read-only; this overrides at workflow scope)
+# ezLab: explicit permissions for forked repo
+# - contents: write — required for gh release create / tag push in publish_release job
+# - packages: write — required for GHCR push (docker images)
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -336,6 +337,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Update Wiki
+        # ezLab: fork repos have no wiki by default — skip if it fails
+        continue-on-error: true
         run: ./util/update_wiki.sh artifacts ${{ steps.create_release.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
