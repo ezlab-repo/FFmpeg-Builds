@@ -196,9 +196,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # ezLab: matrix narrowed to win64 + lgpl-shared only
+        # ezLab: win64 + lgpl-shared (ezCapture) + lgpl-shared-ezcam (ezCam, h264_mf 추가 허용)
         target: [win64]
-        variant: [lgpl-shared]
+        variant: [lgpl-shared, lgpl-shared-ezcam]
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
@@ -263,9 +263,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # ezLab: matrix narrowed to win64 + lgpl-shared only
+        # ezLab: win64 + lgpl-shared (ezCapture) + lgpl-shared-ezcam (ezCam, h264_mf 추가 허용)
         target: [win64]
-        variant: [lgpl-shared]
+        variant: [lgpl-shared, lgpl-shared-ezcam]
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h

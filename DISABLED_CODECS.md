@@ -1,6 +1,8 @@
 # Disabled Codecs in ezLab FFmpeg Builds
 
-> ezLab의 FFmpeg LGPL 빌드(`win64-lgpl-shared` 변형)에서 비활성화한 코덱·라이브러리 단일 정리본. 옵션 변경 시 이 문서도 동시에 갱신해야 함.
+> ezLab의 FFmpeg LGPL 빌드에서 비활성화한 코덱·라이브러리 단일 정리본. 옵션 변경 시 이 문서도 동시에 갱신해야 함.
+>
+> 본 문서 본문은 **`win64-lgpl-shared`(ezCapture 전용)** 빌드를 기준으로 작성. **`win64-lgpl-shared-ezcam`(ezCam 전용)** 빌드는 동일 베이스 위에 `h264_mf` 인코더 하나만 추가 허용 — 문서 말미 "ezCam 빌드 차이" 섹션 참조.
 >
 > 기준 베이스라인: BtbN ffmpeg-master-latest-win64-lgpl-shared (N-124557-g9e71ea2d60-20260520). `BASELINE_20260521.md` 참조.
 
@@ -12,7 +14,7 @@
 - **만료된 특허**: MPEG-4 Part 2 (`mpeg4`, 2024-01-28 만료), AAC LC (`aac`, 미국 만료), MP3, MPEG-2 등
 - **Royalty-free 코덱**: Opus, Vorbis, Theora, AV1 (libaom/libdav1d/libsvtav1), VP8/9 (libvpx), FLAC, WebP, JPEG XL, ALAC 등
 - **무특허 포맷**: PNG, GIF, BMP, PCM 전체 변형, WAV, MKV 등
-- **OS/벤더 라이선스에 위임된 H.264 인코더는 *모두 비활성화*** — `h264_mf` 같은 OS API 위임도 회색지대라 제외 (사용 자체가 ezCapture에서 불필요)
+- **OS/벤더 라이선스에 위임된 H.264 인코더는 *모두 비활성화*** — `h264_mf` 같은 OS API 위임도 회색지대 (ezCapture에선 사용 자체가 불필요). 단 *ezCam 빌드*는 `h264_mf` 한 종만 추가 허용 — 문서 말미 차이 섹션 참조
 - **자막·필터·도구 라이브러리**: libass, libfreetype, libfribidi, libharfbuzz 등 — 특허 무관, 텍스트 렌더링용
 
 **ezCapture 실제 사용 코덱**(*반드시* 유지):
@@ -183,6 +185,31 @@ Apple은 ProRes 사용에 *공식 인증 프로그램* (`ProRes@apple.com`) 운�
 ## BtbN buildconf에서 disable 표시되는 것 (우리 빌드 산출물 불포함)
 
 `libdavs2`, `libxavs2`, `libx264`, `libx265`, `libxvid`, `libfdk-aac` — BtbN 본가 로직으로 lgpl variant에선 자동 disable. 우리도 *cache step robustness*용으로 추가 unconditional disable 처리 완료 (위 표 참조).
+
+## ezCam 빌드 차이 (`win64-lgpl-shared-ezcam`)
+
+ezCam은 Windows 전용 데스크톱 녹화 앱으로, Windows Media Foundation의 `h264_mf` 인코더를 사용해 MP4 출력. 따라서 ezCapture용 `win64-lgpl-shared.sh`와 *완전히 동일한 disable 집합*에서 **`h264_mf` 인코더 한 종만 추가 허용**.
+
+### 추가 허용 항목
+
+| Codec | Type | 허용 근거 |
+|---|---|---|
+| `h264_mf` | encoder | Windows Media Foundation API 래퍼 → Windows EULA의 H.264 라이선스에 위임. ezCam은 Windows 데스크톱 전용 앱이라 사용 PC가 곧 라이선스 보유 주체. |
+
+> 다른 H.264 인코더(`h264_nvenc`, `h264_amf`, `h264_qsv`, `h264_d3d12va`, `h264_vaapi`, `h264_vulkan`)는 ezCam이 사용하지 않으므로 `win64-lgpl-shared`와 동일하게 disable 유지 — 특허 노출 면적 최소화.
+>
+> `h264` decoder/parser, `h264_metadata`/`h264_redundant_pps` bsf도 disable 유지. `h264_mf`는 인코딩 전용이라 디코더·파서 없이 동작.
+
+### 산출물 파일명
+
+- ezCapture 빌드: `ffmpeg-N-...-win64-lgpl-shared.zip`
+- ezCam 빌드: `ffmpeg-N-...-win64-lgpl-shared-ezcam.zip`
+
+→ variant 이름으로 산출물이 분리되어 *서로 덮어쓰지 않음*. 각 앱은 자기 zip만 다운로드해서 동봉.
+
+### 변경 시 동기화 의무
+
+`variants/win64-lgpl-shared.sh`에서 *새 disable 항목을 추가*할 경우, 같은 라인을 `win64-lgpl-shared-ezcam.sh`에도 동일하게 반영해야 함 (단 `h264_mf` 관련 라인은 예외). 두 파일 diff가 *H.264 처리 한 묶음만* 유지되도록 관리.
 
 ## 회귀 감지
 
