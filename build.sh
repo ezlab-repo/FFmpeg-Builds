@@ -32,8 +32,16 @@ cat <<EOF >"$BUILD_SCRIPT"
     cd /ffbuild
     rm -rf ffmpeg prefix
 
-    git clone --filter=blob:none --branch='$GIT_BRANCH' '$FFMPEG_REPO' ffmpeg
-    cd ffmpeg
+    # ezLab: GIT_BRANCH가 commit SHA(40자 hex)면 clone 후 별도 checkout.
+    # branch/tag면 기존처럼 --branch=로 좁힌 clone (효율 유지).
+    if [[ "$GIT_BRANCH" =~ ^[0-9a-f]{40}\$ ]]; then
+        git clone --filter=blob:none '$FFMPEG_REPO' ffmpeg
+        cd ffmpeg
+        git checkout '$GIT_BRANCH'
+    else
+        git clone --filter=blob:none --branch='$GIT_BRANCH' '$FFMPEG_REPO' ffmpeg
+        cd ffmpeg
+    fi
 
     ./configure --prefix=/ffbuild/prefix --pkg-config-flags="--static" \$FFBUILD_TARGET_FLAGS \$FF_CONFIGURE \
         --extra-cflags="\$FF_CFLAGS" --extra-cxxflags="\$FF_CXXFLAGS" --extra-libs="\$FF_LIBS" \
