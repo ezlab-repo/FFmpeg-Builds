@@ -20,6 +20,12 @@ on:
 
 env:
   DOCKER_BUILDKIT: 1
+  # ezLab: FFmpeg upstream 회귀 회피용 commit pin (본 브랜치 ezCam_FFmpegBuild 한정)
+  # 회귀 내용: --disable-decoder=hevc + --disable-parser=hevc 조합에서
+  # libavcodec/hevc/parse.o의 ff_hevc_decode_nal_sei 미해결 link error 발생.
+  # 5/27 master 빌드(93ca648, success) 시점의 FFmpeg upstream HEAD로 고정.
+  # 향후 upstream에서 회귀 해결되면 본 줄 제거하여 master HEAD 추격 복귀.
+  GIT_BRANCH_OVERRIDE: 30595cbc5db6b8443625747a9ce914aacd65492b
 
 # ezLab: explicit permissions for forked repo
 # - contents: write — required for gh release create / tag push in publish_release job
